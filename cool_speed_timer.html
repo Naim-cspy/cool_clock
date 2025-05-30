@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Run Timer</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            transition: background-color 1s ease-in-out;
+            background-color: white; /* Default */
+            color: black;
+        }
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            margin-top: 20%;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Speed Run Timer</h1>
+    <div class="timer" id="timer">0:00:00</div>
+
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
+    <button onclick="window.location.href='https://naim-cspy.github.io/cool_clock/game.html'">Back to Clock</button>
+
+    <!-- Font Selection -->
+    <div class="controls">
+        <label for="fontSelect">Choose a font:</label>
+        <select id="fontSelect">
+            <option value="Arial">Arial</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Georgia">Georgia</option>
+        </select>
+    </div>
+
+    <!-- Text Style Selection -->
+    <div class="controls">
+        <label for="textStyleSelect">Choose text style:</label>
+        <select id="textStyleSelect">
+            <option value="normal">Normal</option>
+            <option value="bold">Bold</option>
+            <option value="italic">Italic</option>
+            <option value="emphasis">Emphasis</option>
+            <option value="strong">Strong</option>
+        </select>
+    </div>
+
+    <!-- Background Mode Selector -->
+    <div class="controls">
+        <label for="bgModeSelect">Change background:</label>
+        <select id="bgModeSelect">
+            <option value="white">White (Default)</option>
+            <option value="black">Black</option>
+            <option value="multicolor">Multicolor</option>
+        </select>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        const colors = ["#FF5733", "#33FF57", "#5733FF", "#FFC300", "#00CED1"];
+        let colorIndex = 0;
+        let intervalId = null;
+        let currentMode = "white";
+
+        function startTimer() {
+            if (!timerInterval) { 
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    document.getElementById("timer").textContent = formatTime(elapsedTime);
+                }, 100);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedTime = 0;
+            startTime = 0;
+            document.getElementById("timer").textContent = "0:00:00";
+        }
+
+       function formatTime(ms) {
+    let milliseconds = Math.floor(ms % 1000 / 10); // Convert ms to 2-digit format
+    let seconds = Math.floor(ms / 1000) % 60;
+    let minutes = Math.floor(ms / 60000) % 60;
+    let hours = Math.floor(ms / 3600000);
+    
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+}
+
+        // Font Selector
+        document.getElementById('fontSelect').addEventListener('change', function() {
+            document.getElementById('timer').style.fontFamily = this.value;
+        });
+
+        // Text Style Selector
+        document.getElementById('textStyleSelect').addEventListener('change', function() {
+            let timerElement = document.getElementById('timer');
+            timerElement.style.fontWeight = this.value === "bold" ? "bold" : "normal";
+            timerElement.style.fontStyle = this.value === "italic" ? "italic" : "normal";
+            timerElement.style.textDecoration = this.value === "emphasis" ? "underline" : "none";
+            timerElement.style.fontWeight = this.value === "strong" ? "900" : "normal";
+        });
+
+        // Background Mode Selector
+        document.getElementById('bgModeSelect').addEventListener('change', function() {
+            changeBackground(this.value);
+        });
+
+        function changeBackground(mode) {
+            let bodyElement = document.body;
+            currentMode = mode;
+
+            // Stop previous interval before switching modes
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+
+            if (mode === "white") {
+                bodyElement.style.backgroundColor = "white";
+                bodyElement.style.color = "black";
+            } else if (mode === "black") {
+                bodyElement.style.backgroundColor = "black";
+                bodyElement.style.color = "white";
+            } else if (mode === "multicolor") {
+                bodyElement.style.backgroundColor = colors[colorIndex];
+                colorIndex = (colorIndex + 1) % colors.length;
+
+                intervalId = setInterval(() => {
+                    if (currentMode === "multicolor") { 
+                        bodyElement.style.backgroundColor = colors[colorIndex];
+                        colorIndex = (colorIndex + 1) % colors.length;
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

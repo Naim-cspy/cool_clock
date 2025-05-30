@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            transition: background-color 1s ease-in-out;
+            background-color: white; /* Default */
+            color: black;
+        }
+        .date-time {
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px black;
+            margin-top: 10%;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Current Time & Date</h1>
+    <div class="date-time" id="dateTime"></div>
+
+    <!-- Timezone Selection -->
+    <div class="controls">
+        <label for="timezoneSelect">Select a country:</label>
+        <select id="timezoneSelect">
+            <option value="Asia/Beirut" selected>Beirut, Lebanon</option>
+            <option value="UTC">UTC</option>
+            <option value="America/New_York">New York, USA</option>
+            <option value="Europe/London">London, UK</option>
+            <option value="Asia/Tokyo">Tokyo, Japan</option>
+            <option value="Australia/Sydney">Sydney, Australia</option>
+        </select>
+    </div>
+
+    <!-- Font Selection -->
+    <div class="controls">
+        <label for="fontSelect">Choose a font:</label>
+        <select id="fontSelect">
+            <option value="Arial">Arial</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Georgia">Georgia</option>
+        </select>
+    </div>
+
+    <!-- Text Style Selection -->
+    <div class="controls">
+        <label for="textStyleSelect">Choose text style:</label>
+        <select id="textStyleSelect">
+            <option value="normal">Normal</option>
+            <option value="bold">Bold</option>
+            <option value="italic">Italic</option>
+            <option value="emphasis">Emphasis</option>
+            <option value="strong">Strong</option>
+        </select>
+    </div>
+
+    <!-- Background Mode Selector -->
+    <div class="controls">
+        <label for="bgModeSelect">Change background:</label>
+        <select id="bgModeSelect">
+            <option value="white">White (Default)</option>
+            <option value="black">Black</option>
+            <option value="multicolor">Multicolor</option>
+        </select>
+    </div>
+
+    <!-- Speed Timer Button -->
+    <div class="controls">
+        <button onclick="window.location.href='https://naim-cspy.github.io/cool_speed_timer/game.html'">Go to Speed Run Timer</button>
+    </div>
+
+    <script>
+        const colors = ["#FF5733", "#33FF57", "#5733FF", "#FFC300", "#00CED1"];
+        let colorIndex = 0;
+        let selectedTimezone = "Asia/Beirut";
+        let intervalId = null;
+        let currentMode = "white";
+
+        function updateDateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString("en-US", { timeZone: selectedTimezone });
+            document.getElementById('dateTime').textContent = timeString;
+        }
+
+        function changeBackground(mode) {
+    let bodyElement = document.body;
+    currentMode = mode;
+
+    // Stop previous interval before switching modes
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
+    if (mode === "white") {
+        bodyElement.style.backgroundColor = "white";
+        bodyElement.style.color = "black";
+    } else if (mode === "black") {
+        bodyElement.style.backgroundColor = "black";
+        bodyElement.style.color = "white";
+    } else if (mode === "multicolor") {
+        // Instantly apply the first color change
+        bodyElement.style.backgroundColor = colors[colorIndex];
+        colorIndex = (colorIndex + 1) % colors.length;
+
+        // Then continue cycling every 5 seconds
+        intervalId = setInterval(() => {
+            if (currentMode === "multicolor") { 
+                bodyElement.style.backgroundColor = colors[colorIndex];
+                colorIndex = (colorIndex + 1) % colors.length;
+            }
+        }, 5000);
+    }
+}
+
+        document.getElementById('timezoneSelect').addEventListener('change', function() {
+            selectedTimezone = this.value;
+            updateDateTime();
+        });
+
+        document.getElementById('fontSelect').addEventListener('change', function() {
+            document.body.style.fontFamily = this.value;
+        });
+
+        document.getElementById('textStyleSelect').addEventListener('change', function() {
+            let dateTimeElement = document.getElementById('dateTime');
+            dateTimeElement.style.fontWeight = this.value === "bold" ? "bold" : "normal";
+            dateTimeElement.style.fontStyle = this.value === "italic" ? "italic" : "normal";
+            dateTimeElement.style.textDecoration = this.value === "emphasis" ? "underline" : "none";
+            dateTimeElement.style.fontWeight = this.value === "strong" ? "900" : "normal";
+        });
+
+        document.getElementById('bgModeSelect').addEventListener('change', function() {
+            changeBackground(this.value);
+        });
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
